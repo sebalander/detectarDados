@@ -15,7 +15,7 @@ import scipy as sc
 import scipy.cluster as cl
 
 
-imgFile = "IMG_20180704_122904.jpg"
+imgFile = "dataset/img00.jpg"
 img = cv2.imread(imgFile)
 
 # %%
