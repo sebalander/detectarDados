@@ -15,7 +15,7 @@ import scipy as sc
 import scipy.cluster as cl
 
 
-imgFile = "dataset/img00.jpg"
+imgFile = "dataset/img15.jpg"
 img = cv2.imread(imgFile)
 
 # %%
@@ -50,18 +50,30 @@ plt.imshow(imgSeg, cmap='Set1')
 
 # %%
 #dadosImg = np.uint8(imgSeg != clasBKG)
-dadosImg = cv2.morphologyEx(imgSeg, cv2.MORPH_ERODE, np.ones((3,3)))
-dadosImg = cv2.morphologyEx(dadosImg, cv2.MORPH_CLOSE, np.ones((5,5)))
 
+ker = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
+dadosImg = cv2.morphologyEx(imgSeg, cv2.MORPH_ERODE, ker)
+
+ker = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5, 5))
+dadosImg = cv2.morphologyEx(dadosImg, cv2.MORPH_CLOSE, ker)
+
+ker = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5, 5))
+dadosImg = cv2.morphologyEx(dadosImg, cv2.MORPH_DILATE, ker)
+
+plt.figure()
 plt.imshow(dadosImg, cmap='gray')
 
-imgContours, contours, hierarchy = cv2.findContours(dadosImg, cv2.CHAIN_APPROX_SIMPLE, cv2.RETR_LIST)
+contours, hierarchy = cv2.findContours(dadosImg, cv2.CHAIN_APPROX_SIMPLE, cv2.RETR_LIST)
 
-plt.imshow(imgContours, cmap='gray')
+plt.figure()
+plt.imshow(img, cmap='gray')
+for cont in contours:
+    contX, contY = np.array(cont).reshape((-1,2)).T
+    plt.plot(contX, contY)
 
 triangles = [cv2.minEnclosingTriangle(con) for con in contours]
 
-
+plt.figure()
 plt.imshow(img  * np.transpose([dadosImg], (1,2,0)))
 for tr in triangles:
     print(tr[1])
